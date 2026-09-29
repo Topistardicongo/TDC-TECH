@@ -7,13 +7,6 @@ if ($_SERVER['REQUEST_METHOD']==='GET') {
     json_out(['orders'=>$orders,'transactions'=>$q->fetchAll()]);
 }
 require_method('POST'); require_csrf(); $data=json_body(); $action=$data['action']??'order';
-if ($action==='topup') {
-    $amount=round((float)($data['amount']??0),2); $method=substr(trim((string)($data['method']??'manual')),0,40);
-    if($amount<5 || $amount>10000) json_out(['error'=>'Top-up amount must be between £5 and £10,000.'],422);
-    $stmt=db()->prepare("INSERT INTO wallet_ledger(user_id,amount,kind,status,note,created_at) VALUES(?,?,'credit','pending',?,UTC_TIMESTAMP())");
-    $stmt->execute([$u['id'],$amount,'Top-up request via '.$method]); audit('wallet.topup_requested',(int)$u['id'],['amount'=>$amount]);
-    json_out(['ok'=>true,'message'=>'Top-up request sent for admin review. Your balance changes after payment is confirmed.']);
-}
 $slug=preg_replace('/[^a-z0-9-]/','',(string)($data['service_slug']??''));
 $q=db()->prepare('SELECT id,name,price,pricing_mode FROM services WHERE slug=? AND active=1'); $q->execute([$slug]); $service=$q->fetch();
 if(!$service) json_out(['error'=>'This service is currently unavailable.'],404);

@@ -2341,12 +2341,11 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <div class="modal-box">
     <div class="modal-hd"><h3>Top up wallet</h3><button class="modal-close" onclick="closeModal('topup-modal')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
     <div class="modal-body">
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-        <div class="svc-card-sm" onclick="selTopupMethod(this)"><div class="svc-icon-sm">💳</div><p class="svc-label">Card</p></div>
-        <div class="svc-card-sm" onclick="selTopupMethod(this)"><div class="svc-icon-sm">₿</div><p class="svc-label">Crypto</p></div>
-        <div class="svc-card-sm" onclick="selTopupMethod(this)"><div class="svc-icon-sm">📱</div><p class="svc-label">Mobile</p></div>
-      </div>
-      <div class="field"><label>Amount (£)</label><input id="topup-amount" type="number" placeholder="e.g. 50.00" min="5"></div>
+      <div class="field"><label>Payment method</label><select id="topup-gateway" onchange="updateTopupFields()"><option value="card">Visa / Mastercard</option><option value="mobile">Pan-Africa mobile money</option><option value="safaricom">M-Pesa Kenya</option><option value="airtel">Airtel Money Kenya</option><option value="crypto">Cryptocurrency</option></select></div>
+      <div class="field" id="topup-currency-wrap"><label>Payment currency</label><select id="topup-currency"><option>KES</option><option>USD</option><option>UGX</option><option>CDF</option><option>XOF</option><option>XAF</option><option>RWF</option><option>ZMW</option><option>SLE</option></select></div>
+      <div class="field" id="topup-phone-wrap" style="display:none"><label>Phone number (international format)</label><input id="topup-phone" type="tel" placeholder="+254712345678"></div>
+      <div class="field"><label>Amount (£)</label><input id="topup-amount" type="number" placeholder="e.g. 50.00" min="5" max="10000" step="0.01"></div>
+      <p style="color:var(--text-secondary,#a1a1aa);font-size:12px">Payment currency is converted using the rate set by your administrator. Your wallet is credited in GBP after provider confirmation.</p><div id="topup-qr" style="display:none;text-align:center;padding:12px"></div>
     </div>
     <div class="modal-foot"><button class="btn-secondary" onclick="closeModal('topup-modal')">Cancel</button><button class="btn-primary" onclick="doTopup()">Proceed to payment</button></div>
   </div>
@@ -2598,12 +2597,13 @@ function navTo(page){
   const fnBtn = document.getElementById('fn-'+page);
   if(fnBtn) fnBtn.classList.add('active');
 }
-function openTopup(){ document.getElementById('topup-modal').classList.add('open'); }
+function openTopup(){ document.getElementById('topup-modal').classList.add('open'); updateTopupFields(); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+function updateTopupFields(){const g=document.getElementById('topup-gateway').value;document.getElementById('topup-phone-wrap').style.display=['mobile','safaricom','airtel'].includes(g)?'block':'none';document.getElementById('topup-currency-wrap').style.display=g==='mobile'||g==='safaricom'||g==='airtel'?'none':'block';if(g==='crypto')document.getElementById('topup-currency').value='USD';}
 async function doTopup(){
-  const amount=parseFloat(document.getElementById('topup-amount').value)||0;
-  const method=document.querySelector('#topup-modal .svc-card-sm[style*="border-color"] .svc-label')?.textContent||'manual';
-  try{await apiPost('/api/orders.php',{action:'topup',amount,method});showToast('Top-up request sent for admin review.','success');closeModal('topup-modal');}catch(error){showToast(error.message,'error');}
+  const amount=parseFloat(document.getElementById('topup-amount').value)||0;const gateway=document.getElementById('topup-gateway').value;const payload={amount,gateway,currency:document.getElementById('topup-currency').value};
+  if(['mobile','safaricom','airtel'].includes(gateway))payload.phone=document.getElementById('topup-phone').value.trim();
+  try{const result=await apiPost('/api/payments/initiate.php',payload);if(result.redirect_url||result.checkout_url){location.href=result.redirect_url||result.checkout_url;return;}if(result.qrcode_link){const box=document.getElementById('topup-qr');box.replaceChildren();const img=document.createElement('img');img.src=result.qrcode_link;img.alt='Payment QR code';img.style.maxWidth='220px';img.style.background='#fff';img.style.padding='8px';box.appendChild(img);const p=document.createElement('p');p.textContent='Scan to pay, then check your payment status.';box.appendChild(p);const a=document.createElement('a');a.href='/payment-return.php?ref='+encodeURIComponent(result.reference);a.textContent='Check payment status';a.style.color='#a5b4fc';box.appendChild(a);box.style.display='block';showToast('Scan the QR code to complete payment.','success');return;}closeModal('topup-modal');showToast(result.message||'Payment initiated. Approve the prompt on your phone.','success');location.href='/payment-return.php?ref='+encodeURIComponent(result.reference);}catch(error){showToast(error.message,'error');}
 }
 const serviceForOrder=(label,details={})=>{
  const s=String(label).toLowerCase();

@@ -7,22 +7,23 @@ if($_SERVER['REQUEST_METHOD']==='GET') {
     'users'=>(int)$pdo->query("SELECT COUNT(*) FROM users WHERE role='customer'")->fetchColumn(),
     'orders'=>(int)$pdo->query('SELECT COUNT(*) FROM orders')->fetchColumn(),
     'pending_orders'=>(int)$pdo->query("SELECT COUNT(*) FROM orders WHERE status='pending'")->fetchColumn(),
-    'pending_topups'=>(int)$pdo->query("SELECT COUNT(*) FROM wallet_ledger WHERE kind='credit' AND status='pending'")->fetchColumn(),
+    'pending_topups'=>(int)$pdo->query("SELECT COUNT(*) FROM topup_payments WHERE status IN ('initiated','pending','processing')")->fetchColumn(),
     'revenue'=>(float)$pdo->query("SELECT COALESCE(SUM(-amount),0) FROM wallet_ledger WHERE kind='debit' AND status='posted'")->fetchColumn()
   ];
   $users=$pdo->query("SELECT u.id,u.name,u.email,u.status,u.created_at,COALESCE(SUM(CASE WHEN l.status='posted' THEN l.amount ELSE 0 END),0) balance FROM users u LEFT JOIN wallet_ledger l ON l.user_id=u.id WHERE u.role='customer' GROUP BY u.id ORDER BY u.id DESC LIMIT 200")->fetchAll();
   $orders=$pdo->query('SELECT o.id,o.user_id,u.name customer,u.email,s.name service,o.description,o.details,o.admin_note,o.amount,o.status,o.created_at FROM orders o JOIN users u ON u.id=o.user_id JOIN services s ON s.id=o.service_id ORDER BY o.id DESC LIMIT 200')->fetchAll();
   foreach($orders as &$order){$order['admin_note']=decrypt_private_note($order['admin_note']);} unset($order);
-  $topups=$pdo->query("SELECT l.id,l.user_id,u.name customer,u.email,l.amount,l.note,l.created_at FROM wallet_ledger l JOIN users u ON u.id=l.user_id WHERE l.kind='credit' AND l.status='pending' ORDER BY l.id DESC LIMIT 100")->fetchAll();
+  $topups=$pdo->query("SELECT p.local_reference,p.provider_reference,p.requested_gbp amount,p.provider_amount,p.currency,p.gateway,p.status,p.created_at,u.name customer,u.email FROM topup_payments p JOIN users u ON u.id=p.user_id ORDER BY p.id DESC LIMIT 200")->fetchAll();
+  $fx=$pdo->query('SELECT currency,units_per_gbp,active,updated_at FROM gateway_fx_rates ORDER BY currency')->fetchAll();
   $services=$pdo->query('SELECT id,slug,name,price,pricing_mode,active FROM services ORDER BY id')->fetchAll();
-  json_out(['stats'=>$stats,'users'=>$users,'orders'=>$orders,'topups'=>$topups,'services'=>$services,'csrf'=>csrf_token(),'admin'=>$admin]);
+  json_out(['stats'=>$stats,'users'=>$users,'orders'=>$orders,'topups'=>$topups,'fx'=>$fx,'services'=>$services,'csrf'=>csrf_token(),'admin'=>$admin]);
 }
 require_method('POST'); require_csrf(); $d=json_body(); $act=(string)($d['action']??''); $pdo=db();
-if($act==='topup_review') {
-  $id=(int)($d['id']??0); $approve=($d['approve']??false)===true;
-  $pdo->beginTransaction(); $q=$pdo->prepare("SELECT * FROM wallet_ledger WHERE id=? AND kind='credit' AND status='pending' FOR UPDATE"); $q->execute([$id]); $row=$q->fetch();
-  if(!$row){$pdo->rollBack();json_out(['error'=>'Pending top-up not found.'],404);}
-  $pdo->prepare("UPDATE wallet_ledger SET status=? ,created_by=? WHERE id=?")->execute([$approve?'posted':'reversed',$admin['id'],$id]); $pdo->commit(); audit($approve?'wallet.topup_approved':'wallet.topup_rejected',(int)$admin['id'],['ledger_id'=>$id]); json_out(['ok'=>true]);
+if($act==='fx_update') {
+  $currency=strtoupper((string)($d['currency']??''));$rate=round((float)($d['units_per_gbp']??0),6);$active=($d['active']??false)===true;
+  if(!in_array($currency,['KES','CDF','UGX','XOF','XAF','RWF','ZMW','SLE','USD'],true)||$rate<=0||$rate>1000000000)json_out(['error'=>'Enter a valid positive conversion rate for a supported currency.'],422);
+  $q=$pdo->prepare('UPDATE gateway_fx_rates SET units_per_gbp=?,active=? WHERE currency=?');$q->execute([$rate,$active?1:0,$currency]);if(!$q->rowCount()){$q=$pdo->prepare('SELECT currency FROM gateway_fx_rates WHERE currency=?');$q->execute([$currency]);if(!$q->fetch())json_out(['error'=>'Currency was not found.'],404);}
+  audit('gateway.fx_rate_updated',(int)$admin['id'],['currency'=>$currency,'active'=>$active]);json_out(['ok'=>true]);
 }
 if($act==='order_note') {
   $id=(int)($d['id']??0);$note=trim((string)($d['note']??''));if(text_len($note)>4000)json_out(['error'=>'Note is too long.'],422);

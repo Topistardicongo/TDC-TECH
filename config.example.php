@@ -10,3 +10,8 @@ define('TDC_FORCE_HTTPS', true);
 
 // Generate a unique 32+ character random key; keep it backed up and private.
 define('TDC_APP_KEY', '');
+
+// Xdigitex Pay credentials. Keep these values on the server only.
+define('TDC_PAY_API_KEY', '');
+define('TDC_PAY_WEBHOOK_SECRET', ''); // Generate a separate random 32+ character secret.
+define('TDC_APP_URL', 'https://your-domain.example');
