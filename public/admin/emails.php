@@ -1,0 +1,14 @@
+<?php
+require dirname(__DIR__,2).'/app/admin_view.php';admin_header('emails','Email notifications');
+?>
+<section class="panel"><div class="toolbar" style="justify-content:space-between"><div><h2 style="margin:0">SMTP notification queue</h2><p id="smtp-state" class="muted">Checking configuration…</p></div><button class="btn primary" onclick="sendTest()">Queue a test email to my admin address</button></div><p class="muted">Configure SMTP on the server in <code>config.local.php</code> using the TDC_SMTP_* constants. Then schedule <code>php bin/send-notifications.php</code> with your hosting cron. Signups, orders, order status changes, and confirmed wallet top-ups enter this queue. SMTP passwords are never stored in the database or exposed to this page.</p></section>
+<section class="panel"><h2>Recent notifications</h2><div class="table-wrap" id="emails"></div></section>
+<script>
+let data=null;const notice=document.getElementById('notice');const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function load(){const r=await fetch('/api/admin-console.php',{credentials:'same-origin',cache:'no-store'});if(r.status===401||r.status===403){location.href='/admin/login.php';return;}data=await r.json();document.getElementById('smtp-state').textContent=data.smtp_configured?'SMTP credentials are configured. Queued email is sent by the scheduled worker.':'SMTP is not configured yet. Messages will remain queued.';document.getElementById('emails').innerHTML=data.mail.length?`<table><thead><tr><th>Recipient</th><th>Subject</th><th>Status</th><th>Attempts</th><th>Last error</th><th>Created</th><th>Action</th></tr></thead><tbody>${data.mail.map(x=>`<tr><td>${esc(x.recipient_email)}</td><td>${esc(x.subject)}</td><td><span class="badge">${esc(x.status)}</span></td><td>${Number(x.attempts)}</td><td>${esc(x.last_error)}</td><td>${esc(x.created_at)}</td><td>${x.status==='failed'?`<button class="btn small" onclick="retry(${x.id})">Queue retry</button>`:'—'}</td></tr>`).join('')}</tbody></table>`:'<p class="empty">No email notifications queued yet.</p>';}
+async function post(action,values={}){const r=await fetch('/api/admin-console.php',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','X-CSRF-Token':data.csrf},body:JSON.stringify({action,...values})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Request failed.');return d;}
+async function sendTest(){try{const d=await post('email_test');notice.textContent=d.message;notice.className='notice';await load();}catch(e){notice.textContent=e.message;notice.className='notice error';}}
+async function retry(id){try{await post('email_retry',{id});notice.textContent='Notification is queued for another attempt.';notice.className='notice';await load();}catch(e){notice.textContent=e.message;notice.className='notice error';}}
+load();
+</script>
+<?php admin_footer(); ?>

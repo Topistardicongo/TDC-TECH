@@ -1,0 +1,3 @@
+<?php
+require dirname(__DIR__,3).'/app/payment_gateway.php';require_method('POST');$secret=pay_config('TDC_PAY_WEBHOOK_SECRET');$provided=(string)($_GET['token']??'');if($secret===''||!hash_equals($secret,$provided)){http_response_code(404);exit;}
+$d=json_body();$providerRef=(string)($d['reference']??'');if($providerRef==='')json_out(['ok'=>true]);$q=db()->prepare('SELECT local_reference FROM topup_payments WHERE provider_reference=?');$q->execute([$providerRef]);$local=$q->fetchColumn();if($local){try{pay_refresh((string)$local);}catch(Throwable $e){error_log('Xdigitex webhook reconciliation failed: '.$e->getMessage());http_response_code(503);exit;}}json_out(['ok'=>true]);
