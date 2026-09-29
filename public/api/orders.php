@@ -28,5 +28,6 @@ try {
     $q=$pdo->prepare('INSERT INTO orders(user_id,service_id,description,details,amount,status,created_at) VALUES(?,?,?,?,?,\'pending\',UTC_TIMESTAMP())'); $q->execute([$u['id'],$service['id'],$desc,json_encode($details),$amount]); $orderId=(int)$pdo->lastInsertId();
     if($amount>0) { $q=$pdo->prepare("INSERT INTO wallet_ledger(user_id,amount,kind,status,reference,note,created_at) VALUES(?,?,'debit','posted',?,?,UTC_TIMESTAMP())"); $q->execute([$u['id'],-$amount,'order:'.$orderId,$desc]); }
     $pdo->commit(); audit('order.created',(int)$u['id'],['order_id'=>$orderId,'amount'=>$amount]);
+    try { require_once dirname(__DIR__,2).'/app/notifications.php'; queue_email($u['email'],'Order received · TDC Tech','Hello '.$u['name'].",\n\nWe received your order #".$orderId.' ('.$service['name'].'). Amount: £'.number_format($amount,2).".\n\nSign in to your dashboard to follow its progress.",(int)$u['id']); } catch(Throwable $e) { error_log('Order notification could not be queued: '.$e->getMessage()); }
     json_out(['ok'=>true,'order_id'=>$orderId,'amount'=>$amount,'message'=>'Order submitted.']);
 } catch(Throwable $e) { if($pdo->inTransaction()) $pdo->rollBack(); throw $e; }

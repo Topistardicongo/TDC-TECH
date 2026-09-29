@@ -19,9 +19,11 @@ if ($action==='register') {
     }
     session_regenerate_id(true); $_SESSION['uid']=$uid; $_SESSION['csrf']=bin2hex(random_bytes(32));
     audit('account.registered',$uid);
+    try { require_once dirname(__DIR__,2).'/app/notifications.php'; queue_email($email,'Welcome to TDC Tech','Hello '.$name.",\n\nYour account is ready. Sign in to manage your services, orders, and wallet.",$uid); } catch(Throwable $e) { error_log('Welcome email could not be queued: '.$e->getMessage()); }
     json_out(['ok'=>true,'redirect'=>'/dashboard.php','csrf'=>csrf_token()]);
 }
-if ($action==='login') {
+if (in_array($action,['login','admin_login'],true)) {
+    $adminLogin=$action==='admin_login';
     $email=strtolower(trim((string)($data['email']??'')));
     $password=(string)($data['password']??'');
     if (!filter_var($email,FILTER_VALIDATE_EMAIL) || $password==='') json_out(['error'=>'Invalid email or password.'],422);
@@ -29,8 +31,8 @@ if ($action==='login') {
     db()->prepare('INSERT INTO login_attempt_limits(email_hash,ip_hash,attempt_count,window_started) VALUES(?,?,1,UTC_TIMESTAMP()) ON DUPLICATE KEY UPDATE attempt_count=IF(window_started<UTC_TIMESTAMP()-INTERVAL 15 MINUTE,1,attempt_count+1),window_started=IF(window_started<UTC_TIMESTAMP()-INTERVAL 15 MINUTE,UTC_TIMESTAMP(),window_started)')->execute([$eh,$ip]);
     $q=db()->prepare('SELECT attempt_count FROM login_attempt_limits WHERE email_hash=? AND ip_hash=?');$q->execute([$eh,$ip]);
     if((int)$q->fetchColumn()>8)json_out(['error'=>'Too many attempts. Wait 15 minutes and try again.'],429);
-    $q=db()->prepare('SELECT id,password_hash,status FROM users WHERE email=?'); $q->execute([$email]); $u=$q->fetch();
-    if (!$u || $u['status']!=='active' || !password_verify($password,$u['password_hash'])) json_out(['error'=>'Invalid email or password.'],401);
+    $q=db()->prepare('SELECT id,password_hash,status,role FROM users WHERE email=?'); $q->execute([$email]); $u=$q->fetch();
+    if (!$u || $u['status']!=='active' || !password_verify($password,$u['password_hash']) || ($adminLogin && $u['role']!=='admin')) json_out(['error'=>'Invalid email or password.'],401);
     db()->prepare('DELETE FROM login_attempt_limits WHERE email_hash=? AND ip_hash=?')->execute([$eh,$ip]);
     if (password_needs_rehash($u['password_hash'],PASSWORD_DEFAULT)) db()->prepare('UPDATE users SET password_hash=? WHERE id=?')->execute([password_hash($password,PASSWORD_DEFAULT),$u['id']]);
     session_regenerate_id(true); $_SESSION['uid']=(int)$u['id']; $_SESSION['csrf']=bin2hex(random_bytes(32));

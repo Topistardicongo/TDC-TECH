@@ -49,7 +49,10 @@ function pay_sync(string $localRef, array $providerData): array {
                     $pdo->prepare('UPDATE wallet_ledger SET status=? WHERE id=? AND status=\'pending\'')->execute([$next==='completed'?'posted':'reversed',$locked['ledger_id']]);
                 }
                 $pdo->commit();
-                if($status==='completed')audit('wallet.gateway_payment_completed',(int)$payment['user_id'],['reference'=>$localRef,'provider'=>'xdigitex']);
+                if($status==='completed'){
+                    audit('wallet.gateway_payment_completed',(int)$payment['user_id'],['reference'=>$localRef,'provider'=>'xdigitex']);
+                    try{$u=$pdo->prepare('SELECT email,name FROM users WHERE id=?');$u->execute([$payment['user_id']]);$customer=$u->fetch();if($customer){require_once __DIR__.'/notifications.php';queue_email($customer['email'],'Wallet top-up received · TDC Tech','Hello '.$customer['name'].",\n\nYour payment is confirmed. £".number_format((float)$payment['requested_gbp'],2).' has been added to your TDC Tech wallet.',(int)$payment['user_id']);}}catch(Throwable $e){error_log('Top-up notification could not be queued: '.$e->getMessage());}
+                }
             }catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();throw $e;}
         } else {
             $normalized=in_array($status,['pending','processing'],true)?$status:'pending';

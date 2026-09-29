@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TDC TECH</title>
+<title data-site-key="meta_title">TDC Tech — Digital Services &amp; Automation</title>
+<meta name="description" content="Digital growth services, music distribution, automation, and instant tools for creators and businesses.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ─── RESET & TOKENS ─── */
@@ -493,19 +494,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .step-text span{font-size:.7rem;color:var(--muted)}
 
 /* Ticket card */
-.ticket-card{
-  border-radius:12px;padding:16px;
-  background:linear-gradient(135deg,rgba(168,85,247,.08),rgba(99,102,241,.06));
-  border:1px solid rgba(168,85,247,.2);
-}
-.ticket-card h4{font-size:.82rem;font-weight:700;margin-bottom:4px}
-.ticket-card p{font-size:.72rem;color:var(--sub)}
-.ticket-status-track{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
-.ticket-step{display:flex;align-items:center;gap:5px;font-size:.65rem;font-weight:700;color:var(--muted)}
-.ticket-step.done{color:var(--green)}
-.ticket-step.active{color:#a5b4fc}
-.ticket-step svg{width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.ticket-arrow{font-size:.6rem;color:var(--muted)}
 
 /* DSP chart bars */
 .dsp-chart{display:flex;flex-direction:column;gap:8px}
@@ -891,6 +879,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 @media(max-width:900px){.reviews-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.reviews-section{padding:60px 20px}.reviews-grid{grid-template-columns:1fr}}
 .empty-state{color:var(--muted);font-size:.82rem;padding:8px}.account-orders{display:grid;gap:9px}.order-card{padding:12px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.025)}.order-card p{font-size:.75rem;color:var(--sub);margin:6px 0 0}.order-card .order-note{white-space:pre-wrap;color:#c7d2fe}
+
+.site-logo-img{display:block}.about-team-avatar img,.review-avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit}.trust-logo img{max-width:28px;max-height:28px;object-fit:contain}
 </style>
 </head>
 <body>
@@ -936,8 +926,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div class="hero-orb hero-orb-2"></div>
     <div class="hero-orb hero-orb-3"></div>
     <div class="hero-badge"><span class="hero-badge-dot"></span>Agency · Automation · Distribution — one platform</div>
-    <h1>Grow faster with<br><span class="grad-text">digital services that deliver</span></h1>
-    <p class="l-hero-sub">Run social campaigns, distribute music to every DSP, buy virtual numbers, and automate your SMM — all from a single wallet-powered dashboard.</p>
+    <h1 data-site-key="home_title">Grow faster with digital services that deliver</h1>
+    <p class="l-hero-sub" data-site-key="home_subtitle">Run campaigns, distribute music, and automate your growth from one dashboard.</p>
     <div class="hero-actions">
       <button class="hero-btn-primary" onclick="scrollToAuth()">
         <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
@@ -1042,7 +1032,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   <div class="trust-ticker-section" id="l-rates">
     <p class="trust-ticker-label">TRUSTED & DISTRIBUTED ACROSS THE WORLD'S BIGGEST PLATFORMS</p>
     <div class="trust-ticker-wrap">
-      <div class="trust-ticker-track">
+      <div class="trust-ticker-track" id="site-brands-track">
         <!-- YouTube -->
         <div class="trust-logo"><svg width="28" height="20" viewBox="0 0 28 20" fill="none"><rect width="28" height="20" rx="5" fill="#FF0000"/><polygon points="11,5 11,15 20,10" fill="#fff"/></svg><span class="trust-logo-name" style="color:#FF0000">YouTube</span></div>
         <!-- Spotify -->
@@ -1142,7 +1132,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 
       <div class="about-team-section">
         <h3>The team behind TDC Tech</h3>
-        <div class="about-team-grid">
+        <div class="about-team-grid" id="site-team-grid">
           <div class="about-team-card">
             <div class="about-team-avatar" style="background:rgba(99,102,241,.12)">👑</div>
             <p class="about-team-name">T. D. Collins</p>
@@ -1196,7 +1186,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
           <li>Free ISRC & UPC generation</li>
           <li>Royalty collection included</li>
           <li>Spotify for Artists claim support</li>
-          <li>YouTube OAC ticket included</li>
+          <li>YouTube OAC support included</li>
         </ul>
         <button class="rate-btn" onclick="scrollToAuth()">Distribute now</button>
       </div>
@@ -1238,7 +1228,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
           <li>Press feature sourcing</li>
           <li>Identity & notability packaging</li>
           <li>Application submission managed</li>
-          <li>Ticket tracker included</li>
+          <li>Order status tracking included</li>
         </ul>
         <button class="rate-btn" onclick="scrollToAuth()">Apply now</button>
       </div>
@@ -1272,7 +1262,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
         <p style="font-size:.72rem;color:var(--muted)">Across all services · Updated September 2026</p>
       </div>
     </div>
-    <div class="reviews-grid">
+    <div class="reviews-grid" id="site-reviews-grid">
       <div class="review-card featured">
         <div class="review-header">
           <div style="display:flex;gap:10px;align-items:center">
@@ -1442,7 +1432,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div class="l-foot-links">
       <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Support</a><a href="#">API Docs</a>
     </div>
-    <p class="l-foot-copy">© 2026 TDC Tech. All rights reserved.</p>
+    <div id="site-partners" class="l-foot-links" aria-label="Partners"></div>
+    <p class="l-foot-copy">© 2026 TDC Tech. All rights reserved. <span id="site-footer-pricing"></span></p>
   </footer>
 
 </div>
@@ -1453,23 +1444,23 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
     Home
   </button>
-  <button class="fn-item" id="fn-music" onclick="fnNav('music')">
+  <button class="fn-item" id="fn-music" onclick="fnNav('music')" data-service-page="music">
     <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
     Music
   </button>
-  <button class="fn-item" id="fn-smm" onclick="fnNav('smm')">
+  <button class="fn-item" id="fn-smm" onclick="fnNav('smm')" data-service-page="smm">
     <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
     SMM
   </button>
-  <button class="fn-item" id="fn-numbers" onclick="fnNav('numbers')">
+  <button class="fn-item" id="fn-numbers" onclick="fnNav('numbers')" data-service-page="numbers">
     <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.82 9.77 19.79 19.79 0 0 1 .75 1.17 2 2 0 0 1 2.72 0h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L6.91 7.91a16 16 0 0 0 6.16 6.16l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
     Numbers
   </button>
-  <button class="fn-item" id="fn-press" onclick="fnNav('press')">
+  <button class="fn-item" id="fn-press" onclick="fnNav('press')" data-service-page="press">
     <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     Press
   </button>
-  <button class="fn-item" id="fn-web-dev" onclick="fnNav('web-dev')">
+  <button class="fn-item" id="fn-web-dev" onclick="fnNav('web-dev')" data-service-page="web-dev">
     <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
     Dev
   </button>
@@ -1493,35 +1484,35 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard
       </button>
       <p class="sb-lbl">Services</p>
-      <button class="sb-link" onclick="navToSvc('social-ads')">
+      <button class="sb-link" onclick="navToSvc('social-ads')" data-service-page="social-ads">
         <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Social Media Ads
       </button>
-      <button class="sb-link" onclick="navToSvc('music')">
+      <button class="sb-link" onclick="navToSvc('music')" data-service-page="music">
         <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Music & Distribution
       </button>
-      <button class="sb-link" onclick="navToSvc('verification')">
+      <button class="sb-link" onclick="navToSvc('verification')" data-service-page="verification">
         <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Verification
       </button>
-      <button class="sb-link" onclick="navToSvc('web-dev')">
+      <button class="sb-link" onclick="navToSvc('web-dev')" data-service-page="web-dev">
         <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Web & App Dev
       </button>
-      <button class="sb-link" onclick="navToSvc('account-mgmt')">
+      <button class="sb-link" onclick="navToSvc('account-mgmt')" data-service-page="account-mgmt">
         <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Account Management
       </button>
-      <button class="sb-link" onclick="navToSvc('press')">
+      <button class="sb-link" onclick="navToSvc('press')" data-service-page="press">
         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Press Releases
       </button>
       <p class="sb-lbl">Instant Tools</p>
-      <button class="sb-link" onclick="navToSvc('smm')">
+      <button class="sb-link" onclick="navToSvc('smm')" data-service-page="smm">
         <svg viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>Likes & Followers
       </button>
-      <button class="sb-link" onclick="navToSvc('numbers')">
+      <button class="sb-link" onclick="navToSvc('numbers')" data-service-page="numbers">
         <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.82 9.77 19.79 19.79 0 0 1 .75 1.17 2 2 0 0 1 2.72 0h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L6.91 7.91a16 16 0 0 0 6.16 6.16l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Virtual Numbers
       </button>
-      <button class="sb-link" onclick="navToSvc('bots')">
+      <button class="sb-link" onclick="navToSvc('bots')" data-service-page="bots">
         <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Custom Bots
       </button>
-      <button class="sb-link" onclick="navToSvc('proxies')">
+      <button class="sb-link" onclick="navToSvc('proxies')" data-service-page="proxies">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Proxies
       </button>
     </nav>
@@ -1575,41 +1566,41 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 
         <p class="svc-section-hd">Agency Services — click to open</p>
         <div class="svc-grid" style="margin-bottom:12px">
-          <div class="svc-card-sm" onclick="navToSvc('social-ads')">
+          <div class="svc-card-sm" onclick="navToSvc('social-ads')" data-service-page="social-ads">
             <div class="svc-icon-sm" style="background:rgba(139,92,246,.15)">📣</div>
             <p class="svc-label">Social Media Ads</p>
           </div>
-          <div class="svc-card-sm" onclick="navToSvc('music')">
+          <div class="svc-card-sm" onclick="navToSvc('music')" data-service-page="music">
             <div class="svc-icon-sm" style="background:rgba(168,85,247,.15)">🎵</div>
             <p class="svc-label">Music & Distribution</p>
           </div>
-          <div class="svc-card-sm" onclick="navToSvc('verification')">
+          <div class="svc-card-sm" onclick="navToSvc('verification')" data-service-page="verification">
             <div class="svc-icon-sm" style="background:rgba(59,130,246,.15)">☑️</div>
             <p class="svc-label">Verification</p>
           </div>
-          <div class="svc-card-sm dev-card" onclick="navToSvc('web-dev')">
+          <div class="svc-card-sm dev-card" onclick="navToSvc('web-dev')" data-service-page="web-dev">
             <div class="svc-icon-sm" style="background:rgba(34,211,238,.15)">🌐</div>
             <p class="svc-label">Web & App Dev</p>
           </div>
-          <div class="svc-card-sm" onclick="navToSvc('account-mgmt')">
+          <div class="svc-card-sm" onclick="navToSvc('account-mgmt')" data-service-page="account-mgmt">
             <div class="svc-icon-sm" style="background:rgba(234,179,8,.15)">💼</div>
             <p class="svc-label">Account Mgmt</p>
           </div>
         </div>
         <div class="svc-grid svc-grid-4" style="margin-bottom:24px">
-          <div class="svc-card-sm" onclick="navToSvc('press')">
+          <div class="svc-card-sm" onclick="navToSvc('press')" data-service-page="press">
             <div class="svc-icon-sm" style="background:rgba(239,68,68,.15)">📰</div>
             <p class="svc-label">Press Releases</p>
           </div>
-          <div class="svc-card-sm" onclick="navToSvc('smm')">
+          <div class="svc-card-sm" onclick="navToSvc('smm')" data-service-page="smm">
             <div class="svc-icon-sm" style="background:rgba(34,211,238,.15)">❤️</div>
             <p class="svc-label">Likes & Followers</p>
           </div>
-          <div class="svc-card-sm" onclick="navToSvc('numbers')">
+          <div class="svc-card-sm" onclick="navToSvc('numbers')" data-service-page="numbers">
             <div class="svc-icon-sm" style="background:rgba(249,115,22,.15)">📱</div>
             <p class="svc-label">Virtual Numbers</p>
           </div>
-          <div class="svc-card-sm" onclick="navToSvc('bots')">
+          <div class="svc-card-sm" onclick="navToSvc('bots')" data-service-page="bots">
             <div class="svc-icon-sm" style="background:rgba(99,102,241,.15)">🤖</div>
             <p class="svc-label">Custom Bots</p>
           </div>
@@ -1632,7 +1623,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       ════════════════════════════════════════ -->
 
       <!-- 1. SOCIAL MEDIA ADS -->
-      <div class="svc-page" id="page-social-ads">
+      <div class="svc-page" id="page-social-ads" data-service-page-panel="social-ads">
         <div class="svc-page-hdr">
           <button class="svc-back-btn" onclick="navTo('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back to Dashboard</button>
           <div class="svc-page-title"><span class="svc-page-emoji">📣</span><div><h2>Social Media Ads</h2><p>Managed campaigns on Meta, Google, TikTok, LinkedIn & X</p></div></div>
@@ -1672,6 +1663,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
                     <div class="field"><label>Daily budget (£)</label><input type="number" placeholder="e.g. 25.00" min="5"></div>
                     <div class="field"><label>Campaign duration (days)</label><input type="number" placeholder="e.g. 14" min="1"></div>
                     <div class="field" style="grid-column:1/-1"><label>Ad creative URL or brief</label><input type="text" placeholder="Canva link, Drive link, or brief summary"></div>
+                    <div class="field" style="grid-column:1/-1"><label>Suggested campaign hashtags</label><p id="ads-hashtags" class="muted">Add campaign hashtags in your ad brief.</p></div>
                   </div>
                 </div>
                 <div class="card">
@@ -1716,7 +1708,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
 
       <!-- 2. MUSIC & DISTRIBUTION -->
-      <div class="svc-page" id="page-music">
+      <div class="svc-page" id="page-music" data-service-page-panel="music">
         <div class="svc-page-hdr">
           <button class="svc-back-btn" onclick="navTo('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back to Dashboard</button>
           <div class="svc-page-title"><span class="svc-page-emoji">🎵</span><div><h2>Music & Video Distribution</h2><p>Global distribution · Artist profiles · Royalty tracking</p></div></div>
@@ -1786,7 +1778,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
                     <div class="step"><div class="step-num">✓</div><div class="step-text"><strong>ISRC & UPC generation</strong><span>Auto-assigned on submission</span></div></div>
                     <div class="step"><div class="step-num">✓</div><div class="step-text"><strong>150+ DSP distribution</strong><span>Spotify, Apple, TikTok & more</span></div></div>
                     <div class="step"><div class="step-num">✓</div><div class="step-text"><strong>Royalty collection</strong><span>Monthly payouts to wallet</span></div></div>
-                    <div class="step"><div class="step-num">✓</div><div class="step-text"><strong>Artist profile tickets</strong><span>Spotify for Artists + YouTube OAC</span></div></div>
+                    <div class="step"><div class="step-num">✓</div><div class="step-text"><strong>Artist profile support</strong><span>Spotify for Artists + YouTube OAC</span></div></div>
                   </div>
                 </div>
                 <button class="btn-primary btn-full" onclick="submitDistribution()"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Distribute release — £15.00</button>
@@ -1794,58 +1786,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
             </div>
           </div>
 
-          <!-- Tab 1: Artist Profiles -->
+          <!-- Tab 1: Artist profiles are tracked as regular service orders. -->
           <div id="music-tab-1" style="display:none">
-            <div style="display:flex;flex-direction:column;gap:14px">
-              <div class="ticket-card">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
-                  <div>
-                    <h4>🎧 Spotify for Artists Claim</h4>
-                    <p>Submit URI to claim and verify your Spotify artist profile</p>
-                  </div>
-                  <span class="status-badge status-review">In Progress</span>
-                </div>
-                <div class="form-grid form-grid-2" style="margin-top:12px">
-                  <div class="field"><label>Spotify Artist URI</label><input type="text" placeholder="spotify:artist:XXXXXXXX"></div>
-                  <div class="field"><label>Account email to transfer to</label><input type="email" placeholder="your@email.com"></div>
-                  <div class="field"><label>Instagram profile link</label><input type="url" placeholder="https://instagram.com/..."></div>
-                  <div class="field"><label>Facebook / official website</label><input type="url" placeholder="https://..."></div>
-                </div>
-                <div class="ticket-status-track" style="margin-top:14px">
-                  <div class="ticket-step done"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Ticket Submitted</div>
-                  <span class="ticket-arrow">›</span>
-                  <div class="ticket-step active"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Sent to Spotify</div>
-                  <span class="ticket-arrow">›</span>
-                  <div class="ticket-step"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Access Granted</div>
-                </div>
-                <button class="btn-secondary" style="margin-top:12px"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Submit Spotify ticket</button>
-              </div>
-
-              <div class="ticket-card" style="background:linear-gradient(135deg,rgba(239,68,68,.07),rgba(168,85,247,.06));border-color:rgba(239,68,68,.2)">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
-                  <div>
-                    <h4>▶️ YouTube Official Artist Channel (OAC)</h4>
-                    <p>Merge Topic channel into Official Artist Channel with music note badge</p>
-                  </div>
-                  <span class="status-badge status-pending">Not Started</span>
-                </div>
-                <div class="form-grid" style="margin-top:12px">
-                  <div class="field"><label>YouTube Topic Channel URL</label><input type="url" placeholder="https://youtube.com/channel/..."></div>
-                  <div class="field"><label>YouTube Personal / Artist Channel URL</label><input type="url" placeholder="https://youtube.com/@YourArtist"></div>
-                  <div class="field"><label>Distributed Topic Video URL #1</label><input type="url" placeholder="https://youtube.com/watch?v=..."></div>
-                  <div class="field"><label>Distributed Topic Video URL #2</label><input type="url" placeholder="https://youtube.com/watch?v=..."></div>
-                  <div class="field"><label>Distributed Topic Video URL #3</label><input type="url" placeholder="https://youtube.com/watch?v=..."></div>
-                </div>
-                <div class="ticket-status-track" style="margin-top:14px">
-                  <div class="ticket-step"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Ticket Submitted</div>
-                  <span class="ticket-arrow">›</span>
-                  <div class="ticket-step"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Sent to YouTube</div>
-                  <span class="ticket-arrow">›</span>
-                  <div class="ticket-step"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>OAC Badge Active</div>
-                </div>
-                <button class="btn-secondary" style="margin-top:12px"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Submit YouTube OAC ticket</button>
-              </div>
-            </div>
+            <div class="card"><div class="card-hd"><h3>Artist profile service requests</h3></div><p class="muted">Artist profile work is handled as a normal music service order. Updates appear in your order history and email notifications.</p><button class="btn-secondary" onclick="navTo('music');switchTab('music',4,document.querySelectorAll('#page-music .svc-tab')[4])">View music orders</button></div>
           </div>
 
           <!-- Tab 2: Project Tracker -->
@@ -1926,7 +1869,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
 
       <!-- 3. VERIFICATION -->
-      <div class="svc-page" id="page-verification">
+      <div class="svc-page" id="page-verification" data-service-page-panel="verification">
         <div class="svc-page-hdr">
           <button class="svc-back-btn" onclick="navTo('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back to Dashboard</button>
           <div class="svc-page-title"><span class="svc-page-emoji">☑️</span><div><h2>Verification & Blue Ticks</h2><p>Meta, TikTok, Twitter Gold, Spotify OAC</p></div></div>
@@ -1973,7 +1916,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
 
       <!-- 4. WEB & APP DEV -->
-      <div class="svc-page" id="page-web-dev">
+      <div class="svc-page" id="page-web-dev" data-service-page-panel="web-dev">
         <div class="svc-page-hdr">
           <button class="svc-back-btn" onclick="navTo('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back to Dashboard</button>
           <div class="svc-page-title"><span class="svc-page-emoji">🌐</span><div><h2>Web & App Development</h2><p>Host · Domain · Custom builds · Templates · Publishing</p></div></div>
@@ -2040,7 +1983,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
 
       <!-- 5. ACCOUNT MANAGEMENT -->
-      <div class="svc-page" id="page-account-mgmt">
+      <div class="svc-page" id="page-account-mgmt" data-service-page-panel="account-mgmt">
         <div class="svc-page-hdr">
           <button class="svc-back-btn" onclick="navTo('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back to Dashboard</button>
           <div class="svc-page-title"><span class="svc-page-emoji">💼</span><div><h2>Account Management</h2><p>Social management · Publicist · Monetisation · DMCA</p></div></div>
@@ -2065,7 +2008,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
 
       <!-- 6. PRESS RELEASES -->
-      <div class="svc-page" id="page-press">
+      <div class="svc-page" id="page-press" data-service-page-panel="press">
         <div class="svc-page-hdr">
           <button class="svc-back-btn" onclick="navTo('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back to Dashboard</button>
           <div class="svc-page-title"><span class="svc-page-emoji">📰</span><div><h2>News & Press Releases</h2><p>Tier-1 media · Wikipedia · Article creation & distribution</p></div></div>
@@ -2138,7 +2081,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
 
       <!-- 7. SMM / LIKES & FOLLOWERS -->
-      <div class="svc-page" id="page-smm">
+      <div class="svc-page" id="page-smm" data-service-page-panel="smm">
         <div class="svc-page-hdr">
           <button class="svc-back-btn" onclick="navTo('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back to Dashboard</button>
           <div class="svc-page-title"><span class="svc-page-emoji">❤️</span><div><h2>Likes, Views & Followers</h2><p>Instant API delivery · All platforms</p></div></div>
@@ -2197,7 +2140,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
 
       <!-- 8. VIRTUAL NUMBERS -->
-      <div class="svc-page" id="page-numbers">
+      <div class="svc-page" id="page-numbers" data-service-page-panel="numbers">
         <div class="svc-page-hdr">
           <button class="svc-back-btn" onclick="navTo('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back to Dashboard</button>
           <div class="svc-page-title"><span class="svc-page-emoji">📱</span><div><h2>Virtual Numbers</h2><p>Instant SMS · 50+ countries · OTP bypass</p></div></div>
@@ -2250,7 +2193,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
 
       <!-- 9. CUSTOM BOTS -->
-      <div class="svc-page" id="page-bots">
+      <div class="svc-page" id="page-bots" data-service-page-panel="bots">
         <div class="svc-page-hdr">
           <button class="svc-back-btn" onclick="navTo('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back to Dashboard</button>
           <div class="svc-page-title"><span class="svc-page-emoji">🤖</span><div><h2>Custom Bots</h2><p>Telegram · DM outreach · Scrapers · Auto-responders</p></div></div>
@@ -2292,7 +2235,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
 
       <!-- 10. PROXIES -->
-      <div class="svc-page" id="page-proxies">
+      <div class="svc-page" id="page-proxies" data-service-page-panel="proxies">
         <div class="svc-page-hdr">
           <button class="svc-back-btn" onclick="navTo('home')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Back to Dashboard</button>
           <div class="svc-page-title"><span class="svc-page-emoji">🔒</span><div><h2>Proxies</h2><p>Residential · Datacenter · Mobile · 195 countries</p></div></div>
@@ -2632,7 +2575,7 @@ function placeOrderFromEl(priceElId, label){
 }
 
 /* ════ DISTRIBUTION ════ */
-async function submitDistribution(){const result=await placeOrder('Music distribution — release',15);if(result)switchTab('music',1,document.querySelectorAll('#page-music .svc-tab')[1]);}
+async function submitDistribution(){const result=await placeOrder('Music distribution — release',15);if(result)switchTab('music',4,document.querySelectorAll('#page-music .svc-tab')[4]);}
 
 /* ════ SMM CALCULATOR ════ */
 function calcSmmPrice(){

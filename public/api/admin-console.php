@@ -1,0 +1,31 @@
+<?php
+require dirname(__DIR__,2).'/app/bootstrap.php';$admin=require_admin();$pdo=db();
+if($_SERVER['REQUEST_METHOD']==='GET'){
+ require_method('GET');
+ $stats=['users'=>(int)$pdo->query("SELECT COUNT(*) FROM users WHERE role='customer'")->fetchColumn(),'orders'=>(int)$pdo->query('SELECT COUNT(*) FROM orders')->fetchColumn(),'requests'=>(int)$pdo->query("SELECT COUNT(*) FROM orders WHERE status='pending'")->fetchColumn(),'revenue'=>(float)$pdo->query("SELECT COALESCE(SUM(-amount),0) FROM wallet_ledger WHERE kind='debit' AND status='posted'")->fetchColumn()];
+ $pages=$pdo->query("SELECT p.slug,p.name,p.icon,p.active,p.sort_order,COUNT(DISTINCT o.id) orders_count,COALESCE(SUM(CASE WHEN l.status='posted' THEN -l.amount ELSE 0 END),0) revenue FROM service_pages p LEFT JOIN service_page_services ps ON ps.page_slug=p.slug LEFT JOIN services s ON s.id=ps.service_id LEFT JOIN orders o ON o.service_id=s.id LEFT JOIN wallet_ledger l ON l.kind='debit' AND l.reference=CONCAT('order:',o.id) GROUP BY p.slug ORDER BY p.sort_order")->fetchAll();
+ $settings=$pdo->query('SELECT setting_key,setting_value,updated_at FROM site_settings ORDER BY setting_key')->fetchAll();$items=$pdo->query('SELECT id,item_type,title,subtitle,body,image_url,icon_text,href,rating,sort_order,active FROM site_content_items ORDER BY item_type,sort_order,id')->fetchAll();$mail=$pdo->query('SELECT id,recipient_email,subject,status,attempts,last_error,sent_at,created_at FROM notification_outbox ORDER BY id DESC LIMIT 100')->fetchAll();
+ require_once dirname(__DIR__,2).'/app/notifications.php';
+ json_out(['stats'=>$stats,'pages'=>$pages,'settings'=>$settings,'items'=>$items,'mail'=>$mail,'smtp_configured'=>smtp_configured(),'csrf'=>csrf_token(),'admin'=>$admin]);
+}
+require_method('POST');require_csrf();$d=json_body();$action=(string)($d['action']??'');
+if($action==='setting_save'){
+ $allowed=['meta_title','meta_description','brand_name','logo_url','favicon_url','home_title','home_subtitle','ads_hashtags','footer_pricing_text','footer_partnerships'];$key=(string)($d['key']??'');$value=trim((string)($d['value']??''));if(!in_array($key,$allowed,true)||text_len($value)>12000)json_out(['error'=>'Invalid setting or value too long.'],422);
+ if(in_array($key,['logo_url','favicon_url'],true)&&$value!==''&&!preg_match('#^(https://|/)[^\s<>"\']+$#i',$value))json_out(['error'=>'Image and icon URLs must use HTTPS or a site-relative path.'],422);
+ $q=$pdo->prepare('INSERT INTO site_settings(setting_key,setting_value,updated_by) VALUES(?,?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value),updated_by=VALUES(updated_by)');$q->execute([$key,$value,$admin['id']]);audit('site.setting_updated',(int)$admin['id'],['key'=>$key]);json_out(['ok'=>true]);
+}
+if($action==='item_save'){
+ $id=(int)($d['id']??0);$type=(string)($d['item_type']??'');$types=['partner','brand','leader','testimonial'];$title=trim((string)($d['title']??''));$subtitle=trim((string)($d['subtitle']??''));$body=trim((string)($d['body']??''));$image=trim((string)($d['image_url']??''));$icon=trim((string)($d['icon_text']??''));$href=trim((string)($d['href']??''));$rating=max(1,min(5,(int)($d['rating']??5)));$sort=(int)($d['sort_order']??0);$active=($d['active']??false)===true;
+ if(!in_array($type,$types,true)||$title===''||text_len($title)>180||text_len($subtitle)>180||text_len($body)>5000||strlen($image)>1000||strlen($href)>1000||text_len($icon)>80)json_out(['error'=>'Check the content item fields and try again.'],422);
+ foreach([$image,$href] as $url)if($url!==''&&!preg_match('#^(https://|/)[^\s<>"\']+$#i',$url))json_out(['error'=>'Images and links must use HTTPS or a site-relative path.'],422);
+ if($id){$q=$pdo->prepare('UPDATE site_content_items SET item_type=?,title=?,subtitle=?,body=?,image_url=?,icon_text=?,href=?,rating=?,sort_order=?,active=? WHERE id=?');$q->execute([$type,$title,$subtitle,$body,$image,$icon,$href,$rating,$sort,$active?1:0,$id]);if(!$q->rowCount()){$q=$pdo->prepare('SELECT id FROM site_content_items WHERE id=?');$q->execute([$id]);if(!$q->fetch())json_out(['error'=>'Content item not found.'],404);}}
+ else{$q=$pdo->prepare('INSERT INTO site_content_items(item_type,title,subtitle,body,image_url,icon_text,href,rating,sort_order,active) VALUES(?,?,?,?,?,?,?,?,?,?)');$q->execute([$type,$title,$subtitle,$body,$image,$icon,$href,$rating,$sort,$active?1:0]);$id=(int)$pdo->lastInsertId();}
+ audit('site.content_item_saved',(int)$admin['id'],['id'=>$id,'type'=>$type]);json_out(['ok'=>true,'id'=>$id]);
+}
+if($action==='item_delete'){$id=(int)($d['id']??0);$q=$pdo->prepare('DELETE FROM site_content_items WHERE id=?');$q->execute([$id]);if(!$q->rowCount())json_out(['error'=>'Content item was not found.'],404);audit('site.content_item_deleted',(int)$admin['id'],['id'=>$id]);json_out(['ok'=>true]);}
+if($action==='email_retry'){$id=(int)($d['id']??0);$q=$pdo->prepare("UPDATE notification_outbox SET status='queued',last_error=NULL WHERE id=? AND status='failed'");$q->execute([$id]);if(!$q->rowCount())json_out(['error'=>'Failed notification not found.'],404);audit('notification.retry_queued',(int)$admin['id'],['id'=>$id]);json_out(['ok'=>true]);}
+if($action==='email_test'){
+ require_once dirname(__DIR__,2).'/app/notifications.php';$q=$pdo->prepare('SELECT email,name FROM users WHERE id=?');$q->execute([$admin['id']]);$me=$q->fetch();if(!$me)json_out(['error'=>'Administrator account not found.'],404);
+ queue_email($me['email'],'TDC Tech SMTP test','Hello '.$me['name']."\n\nThis is a test notification from the TDC Tech admin workspace.",(int)$admin['id']);audit('notification.test_queued',(int)$admin['id']);json_out(['ok'=>true,'message'=>smtp_configured()?'Test queued. Run the notification worker to deliver it.':'Test queued. Add SMTP settings before delivery.']);
+}
+json_out(['error'=>'Unknown action.'],400);

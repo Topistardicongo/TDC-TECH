@@ -32,9 +32,15 @@ jobs:
                       self.active=False
               def handle_data(self,data):
                   if self.active: self.cur.append(data)
-          for source, target in [('app/templates/app-shell.html','/tmp/tdc-shell.js'),('public/admin/index.php','/tmp/tdc-admin.js')]:
+          for source, target in [('app/templates/app-shell.html','/tmp/tdc-shell.js'),('public/admin/index.php','/tmp/tdc-admin.js'),('public/admin/content.php','/tmp/tdc-content.js'),('public/admin/emails.php','/tmp/tdc-emails.js'),('public/admin/login.php','/tmp/tdc-admin-login.js'),('public/admin/service.php','/tmp/tdc-service.js')]:
               parser=Scripts(); parser.feed(Path(source).read_text())
-              Path(target).write_text(parser.items[0])
+              script=parser.items[0]
+              if source.endswith('admin/service.php'): script=script.replace('<?=json_encode($slug)?>', '\"music\"')
+              Path(target).write_text(script)
           PYCODE
           node --check /tmp/tdc-shell.js
           node --check /tmp/tdc-admin.js
+          node --check /tmp/tdc-content.js
+          node --check /tmp/tdc-emails.js
+          node --check /tmp/tdc-admin-login.js
+          node --check /tmp/tdc-service.js
