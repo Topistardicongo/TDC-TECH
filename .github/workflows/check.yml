@@ -1,0 +1,40 @@
+name: Checks
+on:
+  push:
+  pull_request:
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, mbstring
+      - name: PHP syntax
+        run: find app public bin -name '*.php' -print0 | xargs -0 -n1 php -l
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          node --check public/assets/app.js
+          python3 - <<'PYCODE'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class Scripts(HTMLParser):
+              def __init__(self): super().__init__(); self.active=False; self.external=False; self.cur=[]; self.items=[]
+              def handle_starttag(self,tag,attrs):
+                  if tag == 'script': self.active=True; self.external=any(k == 'src' for k,v in attrs); self.cur=[]
+              def handle_endtag(self,tag):
+                  if tag == 'script' and self.active:
+                      if not self.external and ''.join(self.cur).strip(): self.items.append(''.join(self.cur))
+                      self.active=False
+              def handle_data(self,data):
+                  if self.active: self.cur.append(data)
+          for source, target in [('app/templates/app-shell.html','/tmp/tdc-shell.js'),('public/admin/index.php','/tmp/tdc-admin.js')]:
+              parser=Scripts(); parser.feed(Path(source).read_text())
+              Path(target).write_text(parser.items[0])
+          PYCODE
+          node --check /tmp/tdc-shell.js
+          node --check /tmp/tdc-admin.js

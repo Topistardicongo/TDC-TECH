@@ -1,0 +1,8 @@
+Options -Indexes
+<FilesMatch "(^\.|\.env$|\.sql$|\.log$|^config\.local\.php$)">
+  Require all denied
+</FilesMatch>
+RewriteEngine On
+RewriteRule ^(app|bin|database)(/|$) - [F,L]
+RewriteRule ^fimnal%20pro\.html$ - [F,L]
+RewriteRule ^(.*)$ public/$1 [END]
