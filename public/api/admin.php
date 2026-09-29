@@ -27,8 +27,11 @@ if($act==='fx_update') {
 }
 if($act==='order_note') {
   $id=(int)($d['id']??0);$note=trim((string)($d['note']??''));if(text_len($note)>4000)json_out(['error'=>'Note is too long.'],422);
-  $q=$pdo->prepare('UPDATE orders SET admin_note=? WHERE id=?');$q->execute([$note!==''?encrypt_private_note($note):null,$id]);if(!$q->rowCount()){$q=$pdo->prepare('SELECT id FROM orders WHERE id=?');$q->execute([$id]);if(!$q->fetch())json_out(['error'=>'Order not found.'],404);}
-  audit('order.fulfillment_note_updated',(int)$admin['id'],['order_id'=>$id]);json_out(['ok'=>true]);
+  $q=$pdo->prepare('SELECT o.id,o.user_id,u.email,u.name FROM orders o JOIN users u ON u.id=o.user_id WHERE o.id=?');$q->execute([$id]);$order=$q->fetch();if(!$order)json_out(['error'=>'Order not found.'],404);
+  $q=$pdo->prepare('UPDATE orders SET admin_note=? WHERE id=?');$q->execute([$note!==''?encrypt_private_note($note):null,$id]);
+  audit('order.fulfillment_note_updated',(int)$admin['id'],['order_id'=>$id]);
+  if($note!=='')try{require_once dirname(__DIR__,2).'/app/notifications.php';$body='Hello '.$order['name']."\n\nThere is a new update for your TDC Tech order #".$id.".\n\n".$note."\n\nSign in to your dashboard to view your order.";queue_email($order['email'],'New update for order #'.$id.' · TDC Tech',$body,(int)$order['user_id']);}catch(Throwable $e){error_log('Order note email could not be queued: '.$e->getMessage());}
+  json_out(['ok'=>true]);
 }
 if($act==='order_status') {
   $id=(int)($d['id']??0); $status=(string)($d['status']??'');
